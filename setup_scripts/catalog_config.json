@@ -1,0 +1,10 @@
+{
+  "errormail": "james_kirk@starfleet.ufp",
+  "logfile": "testLog.log",
+  "loglevel": "info",
+  "ffmpeg_loglevel": "error",
+  "thumbnail_x_size": "320",
+  "thumbnail_y_size": "240",
+  "movie_thumbnail_frame": "00:00:15",
+  "thumbnail_extension": ".jpg"
+}

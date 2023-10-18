@@ -1,0 +1,17 @@
+__pycache__
+
+# environments
+.idea/
+venv/
+
+# old files
+*_old*
+
+# log files
+*.log
+
+# credentials
+#   plain text
+creds/*creds.json
+#   encrypted
+*.crypt
