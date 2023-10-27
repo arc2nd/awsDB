@@ -125,7 +125,7 @@ class Assets(Base):
                      'created': self.created.strftime("%m/%d/%Y, %H:%M:%S")}
         return json.dumps(json_dict, indent=4)
 
-class AccessRecord(Base):
+class AccessRecords(Base):
     __tablename__ = 'access_record'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     asset = Column(Integer, ForeignKey('assets.id'), nullable=False)
@@ -138,7 +138,7 @@ class AccessRecord(Base):
                      'created': self.created.strftime("%m/%d/%Y, %H:%M:%S")}
         return json.dumps(json_dict, indent=4)
 
-class Catalog(Base):
+class Catalogs(Base):
     __tablename__ = 'catalogs'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)

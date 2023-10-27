@@ -46,6 +46,7 @@ _logger.addHandler(ch)
 # hh.setFormatter(formatter)
 # logger.addHandler(hh)
 
+
 def get_event_logger(asset_name: str = '', event:str = 'submit'):
     logger_path = f'{asset_name}.{event}.log'
     event_logger = logging.getLogger(name=f'{asset_name}.{event}')

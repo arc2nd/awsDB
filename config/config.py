@@ -8,6 +8,7 @@ import logging
 # pip imports
 
 # module imports
+#   don't import log because that will get circular
 from awsDB.config import utils
 
 # TODO: develop a method for cascading configs so that each catalog can have customized settings
@@ -31,9 +32,9 @@ if not config_dict:
     # CONSTANTS
     config_dict = {
         'aws_creds':             '~/scripts/awsDB/creds/aws_creds.crypt',
-        'db_creds':              '~/scripts/awsDB/creds/local_creds.crypt',
+        'db_creds':              '~/scripts/awsDB/creds/db_creds.crypt',
         'broker_creds':          '~/scripts/awsDB/creds/broker_creds.crypt',
-        'local_db_creds':        '~/scripts/awsDB/creds/local_creds.crypt',
+        'test_db_creds':        '~/scripts/awsDB/creds/test_db_creds.crypt',
         'errormail':             'james_kirk@starfleet.com',
         'logfile':               'testLog.log',
         'loglevel':              'debug',
@@ -45,6 +46,7 @@ if not config_dict:
         'test': True
     }
 config_obj = utils.dict2obj(config_dict)
+
 
 def get_value(key):
     """
@@ -70,6 +72,25 @@ def get_value(key):
             return config_dict[key]
     except KeyError:
         return None
+
+
+def update_config(config, catalog_config):
+    """
+    We want each catalog to have its own values for certain config keys like the
+    error email, the logging level, thumbnail attributes.
+    To make this work we need to be able to update the overall system config
+    with values specific to each catalog.
+    This is slightly complicated by the desire to offer both a config dictionary
+    and a config object.
+
+    Args:
+        config:
+        catalog_config:
+
+    Returns:
+        None
+    """
+    return
 
 
 if __name__ == '__main__':

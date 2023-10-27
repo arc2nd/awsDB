@@ -9,8 +9,14 @@ from boto3.s3.transfer import TransferConfig
 
 # module imports
 from awsDB.services import creds
+from awsDB.config.config import config_obj
 
-aws_creds = creds.get_creds(path=os.path.join(creds.CREDS_BASE_PATH, 's3_creds.crypt'))
+if config_obj.test:
+    creds_path = config_obj.test_s3_creds
+else:
+    creds_path = config_obj.s3_creds
+
+s3_creds = creds.get_creds(path=os.path.expanduser(creds_path))
 
 
 ##
@@ -21,7 +27,7 @@ def establish_s3_resource():
     config = TransferConfig(multipart_threshold=3*GB)
 
     #   resource
-    s3_res = boto3.resource('s3', aws_access_key_id=aws_creds['AWS_ACCESS_KEY'], aws_secret_access_key=aws_creds['AWS_SECRET_ACCESS_KEY'])
+    s3_res = boto3.resource('s3', aws_access_key_id=s3_creds['AWS_ACCESS_KEY'], aws_secret_access_key=s3_creds['AWS_SECRET_ACCESS_KEY'])
     return s3_res
 
 
@@ -32,7 +38,7 @@ def get_s3_path(aws_folder='', filepath=''):
 def to_aws(filepath=None, catalog=None, asset_name=None, version: int = 1):
     s3_resource = establish_s3_resource()
     aws_path = get_s3_path(aws_folder=f'{catalog}/{asset_name}/{str(version).zfill(3)}', filepath=os.path.basename(filepath))
-    s3_resource.meta.client.upload_file(filepath, aws_creds['BUCKET'], aws_path)
+    s3_resource.meta.client.upload_file(filepath, s3_creds['BUCKET'], aws_path)
     return aws_path
 
 

@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 # module imports
 from awsDB.services import connection
-from ORM_models import Base, Roles, Users, Assets, Catalog, AccessRecord, BeanLog
+from ORM_models import Base, Roles, Users, Assets, Catalogs, AccessRecords, BeanLog
 
 # create the engine and conn objects
 engine, conn = connection.make_connection()
@@ -30,13 +30,13 @@ with Session(engine) as session:
     stmt = select(Roles).where(Roles.name == 'admin')
     admin_role = session.execute(stmt).all()[0][0]
     admin_user = Users(username='admin',
-                  first_name='James',
-                  last_name='Kirk',
-                  password=connection.encrypt_password('12345'),
-                  email_address='jkirk@starfleet.com',
-                  role_id=admin_role.id,
-                  created=datetime.datetime.now()
-                  )
+                       first_name='James',
+                       last_name='Kirk',
+                       password=connection.encrypt_password('12345'),
+                       email_address='jkirk@starfleet.com',
+                       role_id=admin_role.id,
+                       created=datetime.datetime.now()
+                       )
 
     session.add_all([admin_user])
     session.commit()
@@ -49,10 +49,10 @@ with Session(engine) as session:
     with open(config_path, 'r') as fp:
         catalog_config_dict = json.load(fp)
     print(admin_user)
-    reference_catalog = Catalog(name='Reference',
-                                config=json.dumps(catalog_config_dict),
-                                created_by=admin_user.id
-                                )
+    reference_catalog = Catalogs(name='Reference',
+                                 config=json.dumps(catalog_config_dict),
+                                 created_by=admin_user.id
+                                 )
     session.add_all([reference_catalog])
     session.commit()
 

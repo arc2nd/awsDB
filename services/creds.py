@@ -4,26 +4,39 @@
 import os
 import json
 import pathlib
+from urllib.parse import urlparse
 
 # module imports
 from awsDB.config import utils
 
 CREDS_BASE_PATH = os.path.join(pathlib.Path(os.path.dirname(__file__)).resolve().parents[0].as_posix(), 'creds')
 
-##
-# Will potentially be replaced with different method of 
-# secret storage and retrieval
-##
+# TODO: Will potentially be replaced with different method of secret storage and retrieval
+#   Like Vault or something. It will be decided based on what's entered into the config_obj.db_creds
+#   if it's a filepath, assume it's a .crypt file. if it's a URL it's probably that Secrets interface
+
+
 def get_creds(path):
     import platform
     if 'windows' in platform.platform().lower():
-        return get_windows_creds(path)
+        if os.path.isfile(path):
+            return get_windows_creds(path)
+        else:
+            # maybe it's a URL
+            if urlparse(path).scheme == 'http':
+                return get_vault_creds(path)
     else:
         return get_windows_creds(path)
+
 
 def get_creds_object(path):
     creds_dict = get_creds(path)
     return utils.dict2obj(in_dict=creds_dict)
+
+
+def get_vault_creds(path):
+    return
+
 
 def make_crypt(path):
     import platform
@@ -32,6 +45,7 @@ def make_crypt(path):
     else:
         make_windows_creds(path)
 
+
 def make_windows_creds(path):
     with open(path, 'r') as fp:
         contents = fp.read()
@@ -39,6 +53,7 @@ def make_windows_creds(path):
     crypt_path = get_crypt_path(path)
     with open(crypt_path, 'w') as fp:
         fp.write(msg)
+
 
 def get_windows_creds(path):
     with open(path, 'r') as fp:
@@ -52,10 +67,13 @@ def get_windows_creds(path):
             j = None
     return j
 
+
 def get_crypt_path(path):
     return '{}.crypt'.format(os.path.splitext(path)[0])
 
+
 SALT = b'sAlT'*8
+
 
 def get_fenec(SECRET_KEY):
     import base64
@@ -72,11 +90,13 @@ def get_fenec(SECRET_KEY):
     key = base64.urlsafe_b64encode(kdf.derive(bytes(SECRET_KEY, encoding='utf-8')))
     return Fernet(key)
 
+
 def encrypt(path, msg):
     crypt_path = get_crypt_path(path)
     f = get_fenec(crypt_path)
     token = f.encrypt(bytes(msg, encoding='utf-8'))
     return token.decode()
+
 
 def decrypt(path, msg):
     f = get_fenec(path)

@@ -34,7 +34,7 @@ def drop_table(table_name: str = None, engine=None):
 
 if database_exists(engine.url):
     # TODO: implement drop cascade so that table order in this list does not matter
-    list_of_tables = ['access_record', 'catalogs', 'assets', 'users', 'roles', 'bean_log', 'system_values']
+    list_of_tables = ['access_records', 'catalogs', 'assets', 'users', 'roles', 'bean_log', 'system_values']
 
     for this_table in list_of_tables:
         try:

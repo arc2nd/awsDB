@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 # module imports
 from awsDB.services import connection
-from ORM_models import Base, Roles, Users, Assets, Catalog, BeanLog, AccessRecord
+from ORM_models import Base, Roles, Users, Assets, Catalogs, BeanLog, AccessRecords
 
 # create the engine and conn objects
 engine, conn = connection.make_connection()
@@ -53,7 +53,7 @@ with Session(engine) as session:
 # list catalogs
 print('\n\n### CATALOGS')
 with Session(engine) as session:
-    stmt = select(Catalog)
+    stmt = select(Catalogs)
     all_catalogs = session.execute(stmt)
     for this_object in all_catalogs.all():
         print(f'ID: {this_object[0].id}')

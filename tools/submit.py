@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, select
 
 # module imports
-from awsDB.setup_scripts.ORM_models import Assets, Users, BeanLog, AccessRecord, Catalog
+from awsDB.setup_scripts.ORM_models import Assets, Users, BeanLog, AccessRecords, Catalogs
 from awsDB.services import thumbnailer, hashing, filedata, userdata, connection, s3
 from awsDB.services.log import _logger
 from awsDB.config import config
@@ -70,7 +70,7 @@ def submit(asset_name='', path='', user_name='', catalog=''):
             asset_name = os.path.splitext(os.path.basename(path))[0]
 
         # what catalog
-        stmt = select(Catalog).where(Catalog.name == catalog)
+        stmt = select(Catalogs).where(Catalogs.name == catalog)
         this_catalog = session.execute(stmt).all()[0][0]
 
         # figure out what we can about where this is being submitted from

@@ -1,9 +1,10 @@
 {
-  "aws_creds": "~/scripts/awsDB/creds/aws_creds.crypt",
+  "s3_creds": "~/scripts/awsDB/creds/s3_creds.crypt",
   "db_creds": "~/scripts/awsDB/creds/db_creds.crypt",
   "broker_creds": "~/scripts/awsDB/creds/broker_creds.crypt",
-  "test_aws_creds": "~/scripts/awsDB/creds/aws_creds",
-  "test_db_creds": "~/scripts/awsDB/creds/local_creds.crypt",
+  "test_s3_creds": "~/scripts/awsDB/creds/s3_creds.crypt",
+  "test_db_creds": "~/scripts/awsDB/creds/test_db_creds.crypt",
+  "test_broker_creds": "~/scripts/awsDB/creds/test_broker_creds.crypt",
   "errormail": "james_kirk@starfleet.ufp",
   "logfile": "testLog.log",
   "loglevel": "info",

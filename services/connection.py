@@ -9,8 +9,14 @@ from sqlalchemy import create_engine, select
 
 # module imports
 from awsDB.services import creds
+from awsDB.config.config import config_obj
+from awsDB.services.log import _logger
 
-my_creds = creds.get_creds(path=os.path.join(creds.CREDS_BASE_PATH, 'local_creds.crypt'))
+if config_obj.test:
+    creds_path = os.path.expanduser(config_obj.test_db_creds)
+else:
+    creds_path = os.path.expanduser(config_obj.db_creds)
+my_creds = creds.get_creds(path=creds_path)
 CONNECTION_STRING = f'{my_creds["DB_TYPE"]}://{my_creds["MASTER_USER"]}:{my_creds["PASSWORD"]}@{my_creds["DB_ENDPOINT"]}:{my_creds["PORT"]}/{my_creds["DB_NAME"]}'
 
 
@@ -37,8 +43,7 @@ def make_connection():
         engine: the sqlalchemy engine object
         conn: the sqlalchemy connection object
     """
-    print(f'connecting to: {my_creds["DB_TYPE"]}@{my_creds["DB_ENDPOINT"]}')
-    print(f'Connection String: {CONNECTION_STRING}')
+    _logger.info(f'connecting to: {my_creds["DB_TYPE"]}@{my_creds["DB_ENDPOINT"]}')
     engine = create_engine(CONNECTION_STRING)
     conn = engine.connect()
     return engine, conn
