@@ -125,6 +125,22 @@ class Assets(Base):
                      'created': self.created.strftime("%m/%d/%Y, %H:%M:%S")}
         return json.dumps(json_dict, indent=4)
 
+class Tag(Base):
+    __tablename__ = 'tag'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    parent = Column(Integer, ForeignKey('tag.id'), nullable=True)
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False)
+    created: Mapped[datetime.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    def __repr__(self):
+        json_dict = {'id': self.id,
+                     'name': self.name,
+                     'parent': self.parent,
+                     'created_by': self.created_by,
+                     'created': self.created.strftime("%m/%d/%Y, %H:%M:%S")}
+        return json.dumps(json_dict, indent=4)
+
 class AccessRecords(Base):
     __tablename__ = 'access_record'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

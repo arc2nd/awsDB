@@ -4,10 +4,9 @@
 In the creds folder you should find two JSON files: push_db_creds.json and 
 push_s3_creds.json. You will want to copy these and remove the "push_" prefixes. 
 Then you may alter them by filling in your database and aws information. Once 
-your JSON files are in order it's time to encrypt them by running 
+your JSON files are in order it's time to encrypt them by running
 
     python creds/make_crypt.py
-
 This will call awsDB.services.creds functions in order to encrypt these json files. 
 It would now be safe to delete the source JSON files to better hide your database 
 and aws credentials. This is not really secure as python is interpreted and your
@@ -25,7 +24,6 @@ Example db_creds.json:
       "PORT": "<DATABASE PORT>",
       "DB_NAME": "<DATABASE NAME>"
     }
-
 Example s3_creds.json: 
 
     {
@@ -33,7 +31,6 @@ Example s3_creds.json:
         "AWS_SECRET_ACCESS_KEY": "<AWS_SECRET_ACCESS_KEY>",
         "BUCKET": "<AWS BUCKET NAME>"
     }
-
 ### Configure your settings:
 In the config folder you should find a JSON file: config.json. You will want 
 to alter its values to match how you want your system to behave. There is also a 
@@ -58,6 +55,25 @@ Example config.json:
       "thumbnail_extension": ".jpg",
       "test": true
     }
+### Errormail
+At some point we would like to email errors and other issues to this address. 
+This might actually be better handled through an event monitoring system that
+will allow individual users to subscribe to specific events.
+### loglevel
+How much logging do you want?
+### ffmpeg_loglevel
+FFMpeg comes with its own logging command switch.
+### thumbnail_x_size, thumbnail_y_size
+This determines the x and y size of the thumbnails that are generated.
+### movie_thumbnail_frame
+This determines what which movie frame is extracted to create the thumbnail.
+### thumbnail_extension
+This will determine what file type the thumbnails are.
+###  Test
+The test value controls which set of credentials to decrypt and user. This 
+way you can set up a test database server. It might be interesting instead 
+to replace this with a more flexible system that reads a value as a prefix to 
+apply to which creds to use.
 
 # Organization
 The module as a whole is divided into subsections based on the area of focus.
@@ -120,3 +136,14 @@ Command-line tools
     add_user.py    - Add a new user to the system
     search.py      - Search the database for Catalogs, Users, Roles or Assets
     submit.py      - Add a new asset to the system
+
+
+# Tables
+
+**Catalog**: each database belongs to a catalog group (ie: Reference, ProjectA)  
+**Role**: determine what you can do with the assets  
+**User**: who are you  
+**Asset**: an individual piece of art, documentation, or other item  
+**Tag**: a short word or phrase to describe and categorize an asset  
+**AccessRecord**: every time someone creates or searches for an asset it should be registered here  
+**BeanLog**: every time you want to keep track of something else happening you can create a bean  

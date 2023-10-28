@@ -62,9 +62,21 @@ def search(asset_name: str = '', user_name: str = '', tags: typing.List[str] = '
 
             return all_assets
 
+def search_string(search: str = ''):
+    search_text = "%{}%".format(search)
+    assets = Assets.query.filter(Assets.tags.like(search_text)).all()
+    catalogs = Catalogs.query.filter(Catalogs.name.like(search_text)).all()
+    users = Users.query.filter(Users.name.like(search_text)).all()
+    return {'assets': assets,
+            'catalogs': catalogs,
+            'users': users
+            }
+
 
 if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
-    all_assets = search(asset_name=my_args.asset_name[0], user_name=my_args.user_name[0])
-    _logger.info(all_assets)
+    # all_assets = search(asset_name=my_args.asset_name[0], user_name=my_args.user_name[0])
+    search_results = search_string(search='cats_test_image')
+    # _logger.info(all_assets)
+    _logger.info(search_results)
