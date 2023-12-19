@@ -142,8 +142,10 @@ Command-line tools
 
 **Catalog**: each database belongs to a catalog group (ie: Reference, ProjectA)  
 **Role**: determine what you can do with the assets  
-**User**: who are you  
+**User**: who are   
 **Asset**: an individual piece of art, documentation, or other item  
-**Tag**: a short word or phrase to describe and categorize an asset  
+**Tag**: a short different word or phrase to describe and categorize an asset  
 **AccessRecord**: every time someone creates or searches for an asset it should be registered here  
 **BeanLog**: every time you want to keep track of something else happening you can create a bean  
+
+This is a new line
