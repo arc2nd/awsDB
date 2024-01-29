@@ -2,14 +2,18 @@
 
 # builtin imports
 import os
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 import boto3
 from boto3.s3.transfer import TransferConfig
 
 # module imports
-from awsDB.services import creds
-from awsDB.config.config import config_obj
+from services import creds
+from config.config import config_obj
 
 if config_obj.test:
     creds_path = config_obj.test_s3_creds
@@ -58,7 +62,7 @@ def list_all(filepath, bucket, aws_folder, s3_res=None):
     s3_res.meta.client.upload_file(filepath, bucket, aws_path)
 
     def percent_cb(complete, total):
-        sys.stdout.write('.')
+        sys.stdout.write('')
         sys.stdout.flush()
 
     return aws_path

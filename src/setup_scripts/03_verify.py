@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 # builtin imports
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 
@@ -8,7 +12,7 @@ from sqlalchemy import select, inspect
 from sqlalchemy.orm import Session
 
 # module imports
-from awsDB.services import connection
+from services import connection
 from ORM_models import Base, Roles, Users, Assets, Catalogs, BeanLog, AccessRecords
 
 # create the engine and conn objects

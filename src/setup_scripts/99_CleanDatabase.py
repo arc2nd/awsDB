@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
+# builtin imports
+import sys
+import pathlib
 import traceback
 
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
+
+# pip imports
 from sqlalchemy import MetaData, Table, Column, ForeignKey, Integer, String, Time
 from sqlalchemy_utils import database_exists
 
-from awsDB.services import connection
-from awsDB.setup_scripts.ORM_models import Base
+# module imports
+from services import connection
+from setup_scripts.ORM_models import Base
 
 # create the engine and conn objects
 engine, conn = connection.make_connection()

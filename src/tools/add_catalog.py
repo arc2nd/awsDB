@@ -2,21 +2,25 @@
 
 # builtin imports
 import os
+import sys
 import json
 import typing
+import pathlib
 import argparse
 import datetime
 import traceback
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 # module imports
-from awsDB.setup_scripts.ORM_models import Assets, Users, BeanLog, AccessRecords, Catalogs
-from awsDB.services import thumbnailer, hashing, filedata, userdata, connection, s3
-from awsDB.services.log import _logger
-from awsDB.config.config import config_obj
+from setup_scripts.ORM_models import Assets, Users, BeanLog, AccessRecords, Catalogs
+from services import thumbnailer, hashing, filedata, userdata, connection, s3
+from services.log import _logger
+from config.config import config_obj
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Add a catalog to the database")

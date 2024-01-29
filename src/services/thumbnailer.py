@@ -2,16 +2,20 @@
 
 # builtin imports
 import os
+import sys
 import typing
+import pathlib
 import argparse
 import subprocess
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 
 # module imports
-from awsDB.services.log import _logger
-from awsDB.services import filedata
-from awsDB.config.config import config_obj
+from services.log import _logger
+from services import filedata
+from config.config import config_obj
 
 
 def parse_args():

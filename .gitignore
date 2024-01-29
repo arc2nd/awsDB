@@ -12,6 +12,6 @@ venv/
 
 # credentials
 #   plain text
-creds/*creds.json
+src/creds/*creds.json
 #   encrypted
 *.crypt

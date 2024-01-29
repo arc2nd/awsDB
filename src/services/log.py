@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 # builtin imports
+import sys
 import logging
+import pathlib
 
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 # pip imports
 
 # module imports
-from awsDB.config.config import config_obj
+from config.config import config_obj
 
 # TODO: be able to spawn a per-event log so that we can have separate logs for things like submit that get
 #   uploaded with the asset

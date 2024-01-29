@@ -2,9 +2,13 @@
 
 # builtin imports
 import os
+import sys
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # module imports
-from awsDB.services.log import _logger
+from services.log import _logger
 
 
 # Functions to gather information about the file

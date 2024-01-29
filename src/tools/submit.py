@@ -2,21 +2,24 @@
 
 # builtin imports
 import os
+import sys
 import typing
-import logging
+import pathlib
 import argparse
 import datetime
 import traceback
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, select
 
 # module imports
-from awsDB.setup_scripts.ORM_models import Assets, Users, BeanLog, AccessRecords, Catalogs
-from awsDB.services import thumbnailer, hashing, filedata, userdata, connection, s3
-from awsDB.services.log import _logger
-from awsDB.config import config
+from setup_scripts.ORM_models import Assets, Users, BeanLog, AccessRecords, Catalogs
+from services import thumbnailer, hashing, filedata, userdata, connection, s3
+from services.log import _logger
+from config import config
 
 
 # logging.basicConfig()
@@ -28,7 +31,7 @@ from awsDB.config import config
 # TODO: Should we use the hashes to prevent uploading the exact same file twice?
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Add an file to the database as an asset item")
     parser.add_argument('filename', action="store", nargs=1, default=None, help="The filepath of the file we're submitting")
     parser.add_argument("-an", "--asset_name", action="store", dest="asset_name", nargs=1, default=None, help="The name that you want to give this asset")
@@ -38,7 +41,7 @@ def parse_args():
     return args
 
 
-def find_latest(assets: typing.List[Assets]):
+def find_latest(assets: typing.List[Assets]) -> typing.Optional[int]:
     if assets:
         return max(this_asset[0].version for this_asset in assets)
     else:
@@ -50,7 +53,7 @@ def increment_version(initial_version: int = 0) -> int:
     return int(initial_version + 1)
 
 
-def submit(asset_name='', path='', user_name='', catalog=''):
+def submit(asset_name: str = '', path: str = '', user_name: str = '', catalog: str = '') -> None:
     """
     Submit a media asset to the database and the s3 bucket
 
@@ -102,7 +105,6 @@ def submit(asset_name='', path='', user_name='', catalog=''):
             version_number = increment_version(all_assets[0].version)
         _logger.info(f'Version: {version_number}')
 
-
         # put the asset and thumbnail in s3
         asset_s3_path = s3.to_aws(filepath=path,
                                   catalog=catalog,
@@ -146,6 +148,7 @@ def submit(asset_name='', path='', user_name='', catalog=''):
             if os.path.exists(thumbnail_local_path):
                 os.remove(thumbnail_local_path)
         _logger.info(f'New Asset: {new_asset}')
+
 
 if __name__ == '__main__':
     # collect information from the CLI

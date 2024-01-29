@@ -2,12 +2,15 @@
 
 # builtin imports
 import os
+import sys
 import json
 import pathlib
 from urllib.parse import urlparse
 
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
+
 # module imports
-from awsDB.config import utils
+from config import utils
 
 CREDS_BASE_PATH = os.path.join(pathlib.Path(os.path.dirname(__file__)).resolve().parents[0].as_posix(), 'creds')
 
@@ -76,6 +79,7 @@ SALT = b'sAlT'*8
 
 
 def get_fenec(SECRET_KEY):
+    # print(f'\tSECRET KEY: {SECRET_KEY}')
     import base64
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.backends import default_backend
@@ -93,13 +97,13 @@ def get_fenec(SECRET_KEY):
 
 def encrypt(path, msg):
     crypt_path = get_crypt_path(path)
-    f = get_fenec(crypt_path)
+    f = get_fenec(str(os.path.basename(crypt_path)))
     token = f.encrypt(bytes(msg, encoding='utf-8'))
     return token.decode()
 
 
 def decrypt(path, msg):
-    f = get_fenec(path)
+    f = get_fenec(str(os.path.basename(path)))
     return f.decrypt(bytes(msg, encoding='utf-8')).decode()
 
 

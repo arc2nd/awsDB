@@ -53,7 +53,8 @@ Example config.json:
       "thumbnail_y_size": "240",
       "movie_thumbnail_frame": "00:00:15",
       "thumbnail_extension": ".jpg",
-      "test": true
+      "test": true, 
+      "version": "0.0.1"
     }
 ### Errormail
 At some point we would like to email errors and other issues to this address. 
@@ -96,8 +97,14 @@ encrypted credentials
 **GUI:**  
 graphical user interface tools
 
-    submit.py
-    search.py
+    icons            - Library of icons
+    lib              - Library of objects
+    widgets          - Library of PyQt widgets
+    edit_catalogs.py - To edit the catalogs
+    edit_roles.py    - To edit the user roles
+    edit_users.py    - To edit the users
+    submit.py        - To submit a new asset
+    search.py        - To search for existing assets
 
 **icons:**  
 icons and images needed for the system and tools, including some default thumbnails
@@ -131,11 +138,13 @@ unittests and example asset files
 **tools:**  
 Command-line tools
 
-    add_catalog.py - Add a new catalog to the system
-    add_role.py    - Add a new role to the system
-    add_user.py    - Add a new user to the system
-    search.py      - Search the database for Catalogs, Users, Roles or Assets
-    submit.py      - Add a new asset to the system
+    add_catalog.py          - Add a new catalog to the system
+    add_role.py             - Add a new role to the system
+    add_user.py             - Add a new user to the system
+    get_catalogs.py         - Get a list of Catalogs from the Database
+    get_postgres_version.py - Get the version of your Postgres Database
+    search.py               - Search the database for Catalogs, Users, Roles or Assets
+    submit.py               - Add a new asset to the system
 
 
 # Tables
@@ -144,8 +153,15 @@ Command-line tools
 **Role**: determine what you can do with the assets  
 **User**: who are   
 **Asset**: an individual piece of art, documentation, or other item  
-**Tag**: a short different word or phrase to describe and categorize an asset  
+**Tag**: a short word or phrase to describe and categorize an asset  
 **AccessRecord**: every time someone creates or searches for an asset it should be registered here  
-**BeanLog**: every time you want to keep track of something else happening you can create a bean  
+**BeanLog**: every time you want to keep track of something else happening you can create a bean
 
-This is a new line
+
+
+# TODOs:
+* Make my own dark stylesheet?
+* Rework the way it finds its sibling modules (shouldn't have to sys.path.append)
+* Local settings interface, so we can set the DB and AWS settings via GUI instead of files
+* Change the project name to something better
+

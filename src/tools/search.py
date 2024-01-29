@@ -1,18 +1,26 @@
 #!/usr/bin/env python
 
+# builtin imports
+import sys
 import typing
+import pathlib
 import argparse
 import traceback
 
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
+
+# pip imports
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, select
 
-from awsDB.setup_scripts.ORM_models import Assets, Users, Catalogs, BeanLog
-from awsDB.services import hashing, filedata, userdata, connection
-from awsDB.services.log import _logger
-from awsDB.config.config import config_obj
+# module imports
+from setup_scripts.ORM_models import Assets, Users, Catalogs, BeanLog
+from services import hashing, filedata, userdata, connection
+from services.log import _logger
+from config.config import config_obj
 
-def parse_args():
+
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Add an file to the database as an asset item")
     parser.add_argument("-an", "--asset_name", action="store", dest="asset_name", nargs=1, default=None, help="The name that you want to give this asset")
     parser.add_argument('-un', '--user_name', action='store', dest='user_name', nargs=1, default=None, help='The name of the user submitting this asset')
@@ -23,7 +31,7 @@ def parse_args():
 engine, conn = connection.make_connection()
 
 
-def search(asset_name: str = '', user_name: str = '', tags: typing.List[str] = '', time_range='',):
+def search(asset_name: str = '', user_name: str = '', tags: typing.List[str] = '', time_range='',) -> typing.Dict:
     with Session(engine) as session:
         # figure out what we can about where this is being submitted from
         my_user_data = userdata.collect_user_data()
@@ -62,8 +70,9 @@ def search(asset_name: str = '', user_name: str = '', tags: typing.List[str] = '
 
             return all_assets
 
-def search_string(search: str = ''):
-    search_text = "%{}%".format(search)
+
+def search_string(search_string: str = '') -> typing.Dict:
+    search_text = "%{}%".format(search_string)
     assets = Assets.query.filter(Assets.tags.like(search_text)).all()
     catalogs = Catalogs.query.filter(Catalogs.name.like(search_text)).all()
     users = Users.query.filter(Users.name.like(search_text)).all()
@@ -77,6 +86,6 @@ if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
     # all_assets = search(asset_name=my_args.asset_name[0], user_name=my_args.user_name[0])
-    search_results = search_string(search='cats_test_image')
+    search_results = search_string(search_string='cats_test_image')
     # _logger.info(all_assets)
     _logger.info(search_results)

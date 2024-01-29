@@ -2,14 +2,18 @@
 
 # builtin imports
 import os
+import sys
 import json
 import logging
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 
 # module imports
 #   don't import log because that will get circular
-from awsDB.config import utils
+from config import utils
 
 # TODO: develop a method for cascading configs so that each catalog can have customized settings
 
@@ -31,10 +35,10 @@ if not config_dict:
     # dictionary of configuration strings
     # CONSTANTS
     config_dict = {
-        'aws_creds':             '~/scripts/awsDB/creds/aws_creds.crypt',
-        'db_creds':              '~/scripts/awsDB/creds/db_creds.crypt',
-        'broker_creds':          '~/scripts/awsDB/creds/broker_creds.crypt',
-        'test_db_creds':        '~/scripts/awsDB/creds/test_db_creds.crypt',
+        'aws_creds':             '~/scripts/awsDB/src/creds/s3_creds.crypt',
+        'db_creds':              '~/scripts/awsDB/src/creds/db_creds.crypt',
+        'broker_creds':          '~/scripts/awsDB/src/creds/broker_creds.crypt',
+        'test_db_creds':        '~/scripts/awsDB/src/creds/test_db_creds.crypt',
         'errormail':             'james_kirk@starfleet.com',
         'logfile':               'testLog.log',
         'loglevel':              'debug',

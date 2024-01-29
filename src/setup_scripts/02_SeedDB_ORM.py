@@ -2,15 +2,19 @@
 
 # builtin imports
 import os
+import sys
 import json
+import pathlib
 import datetime
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 # module imports
-from awsDB.services import connection
+from services import connection
 from ORM_models import Base, Roles, Users, Assets, Catalogs, AccessRecords, BeanLog
 
 # create the engine and conn objects

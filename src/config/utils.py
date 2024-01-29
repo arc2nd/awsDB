@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 # builtin imports
+import sys
 import json
+import pathlib
+
+sys.path.append(str(pathlib.Path(__file__).parents[1]))
 
 # pip imports
 
 # module imports
-from awsDB.config import utils
+from config import utils
 
 ##
 # EXAMPLE OF USE
