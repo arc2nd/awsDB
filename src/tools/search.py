@@ -19,10 +19,9 @@ from services import hashing, filedata, userdata, connection
 from services.log import _logger
 from config.config import config_obj
 
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Add an file to the database as an asset item")
-    parser.add_argument("-an", "--asset_name", action="store", dest="asset_name", nargs=1, default=None, help="The name that you want to give this asset")
+    parser.add_argument('search_string', action="store", nargs=1, default=None, help="The string we're going to search for")
     parser.add_argument('-un', '--user_name', action='store', dest='user_name', nargs=1, default=None, help='The name of the user submitting this asset')
     args = parser.parse_args()
     return args
@@ -109,7 +108,5 @@ def search_string(search_string: str = '',
 if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
-    # all_assets = search(asset_name=my_args.asset_name[0], user_name=my_args.user_name[0])
-    # _logger.info(all_assets)
-    search_results = search_string(search_string=my_args.asset_name[0])
+    search_results = search_string(search=my_args.search_string[0], user_name=my_args.user_name[0])
     _logger.info(search_results)

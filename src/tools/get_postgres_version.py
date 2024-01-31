@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 
 # builtin imports
-import sys
-
-sys.path.append('..')
 
 # pip imports
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
 # module imports
-from services import connection
+from awsDB.services import connection
 
 
 def main():
