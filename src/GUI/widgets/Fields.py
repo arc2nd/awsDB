@@ -73,8 +73,8 @@ class FileField(QtWidgets.QWidget):
 
 
 class StringField(QtWidgets.QWidget):
-    def __init__(self, parent, label: str) -> None:
-        super(StringField, self).__init__(parent)
+    def __init__(self, parent: QtWidgets.QLayout, label: str, enter_func=None) -> None:
+        super(StringField, self).__init__()
 
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.setSpacing(0)

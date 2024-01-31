@@ -71,21 +71,45 @@ def search(asset_name: str = '', user_name: str = '', tags: typing.List[str] = '
             return all_assets
 
 
-def search_string(search_string: str = '') -> typing.Dict:
-    search_text = "%{}%".format(search_string)
-    assets = Assets.query.filter(Assets.tags.like(search_text)).all()
-    catalogs = Catalogs.query.filter(Catalogs.name.like(search_text)).all()
-    users = Users.query.filter(Users.name.like(search_text)).all()
-    return {'assets': assets,
-            'catalogs': catalogs,
-            'users': users
-            }
+def search_string(search_string: str = '',
+                  asset: bool = True,
+                  catalog: bool = False,
+                  user: bool = False) -> typing.Dict:
+    search_text = f'%{search_string}%'
+    with Session(engine) as session:
+        # figure out what we can about where this is being submitted from
+        my_user_data = userdata.collect_user_data()
+        _logger.info(f'my_user_data: {my_user_data}')
+
+        # who is searching
+        # stmt = select(Users).where(Users.username == user_name)
+        # searched_by_user = session.execute(stmt).all()[0][0]
+        # _logger.info(f'searched_by_user: {searched_by_user}')
+
+        if asset and not catalog and not user:
+            assets = session.query(Assets).filter(Assets.name.ilike(search_text)).all()
+            return assets
+        if not asset and catalog and not user:
+            catalogs = session.query(Catalogs).filter(Catalogs.name.ilike(search_text)).all()
+            return catalogs
+        if not asset and not catalog and user:
+            users = session.query(Users).filter(Users.username.ilike(search_text)).all()
+            return users
+
+        if asset and catalog and user:
+            assets = session.query(Assets).filter(Assets.name.ilike(search_text)).all()
+            catalogs = session.query(Catalogs).filter(Catalogs.name.ilike(search_text)).all()
+            users = session.query(Users).filter(Users.username.ilike(search_text)).all()
+            return {'assets': assets,
+                    'catalogs': catalogs,
+                    'users': users
+                    }
 
 
 if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
     # all_assets = search(asset_name=my_args.asset_name[0], user_name=my_args.user_name[0])
-    search_results = search_string(search_string='cats_test_image')
     # _logger.info(all_assets)
+    search_results = search_string(search_string=my_args.asset_name[0])
     _logger.info(search_results)
