@@ -14,6 +14,7 @@ from boto3.s3.transfer import TransferConfig
 # module imports
 from services import creds
 from config.config import config_obj
+from services.log import _logger
 
 if config_obj.test:
     creds_path = config_obj.test_s3_creds
@@ -40,10 +41,27 @@ def get_s3_path(aws_folder='', filepath=''):
 
 
 def to_aws(filepath=None, catalog=None, asset_name=None, version: int = 1):
+    _logger.info(catalog)
+    _logger.info(version)
+    _logger.info(asset_name)
+    _logger.info(filepath)
     s3_resource = establish_s3_resource()
     aws_path = get_s3_path(aws_folder=f'{catalog}/{asset_name}/{str(version).zfill(3)}', filepath=os.path.basename(filepath))
     s3_resource.meta.client.upload_file(filepath, s3_creds['BUCKET'], aws_path)
     return aws_path
+
+
+def from_aws(dst_path=None,
+             file_name=None,
+             catalog: str = None,
+             asset_name: str = None,
+             version: int = 1,
+             s3_resource=None):
+    if not s3_resource:
+        s3_resource = establish_s3_resource()
+    aws_path = get_s3_path(aws_folder=f'{catalog}/{asset_name}/{str(version).zfill(3)}', filepath=file_name)
+    s3_resource.meta.client.download_file(s3_creds['BUCKET'], aws_path, dst_path)
+    return dst_path
 
 
 ##
@@ -67,23 +85,6 @@ def list_all(filepath, bucket, aws_folder, s3_res=None):
 
     return aws_path
 
-##
-# Placeholder to retrieve items from aws
-##
-def from_aws(bucket, s3_res=None):
-    if not s3_res:
-        s3_res = establish_s3_resource()
-    this_bucket = s3_res.Bucket(bucket)
-    for item in this_bucket.objects.all():
-        # print(dir(item))
-        print(item._key)
-
-def from_aws1(bucket, src, dst, s3_res=None):
-    if not s3_res:
-        s3_res = establish_s3_resource()
-    this_bucket = s3_res.Bucket(bucket)
-    with open(dst, 'wb') as fp:
-        this_bucket.download_fileobj(src, fp)
 
 
 

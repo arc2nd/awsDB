@@ -26,6 +26,11 @@ def get_catalogs() -> typing.List[str]:
             catalogs.append(this_object[0].name)
     return catalogs
 
+def get_catalog_by_id(id: int = 1):
+    with Session(engine) as session:
+        return session.query(Catalogs).filter(Catalogs.id == id).one().name
+
+
 if __name__ == '__main__':
     catalogs = get_catalogs()
     print(catalogs)

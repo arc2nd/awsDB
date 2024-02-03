@@ -108,5 +108,5 @@ def search_string(search_string: str = '',
 if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
-    search_results = search_string(search=my_args.search_string[0], user_name=my_args.user_name[0])
+    search_results = search_string(search_string=my_args.search_string[0])  #, user_name=my_args.user_name[0])
     _logger.info(search_results)

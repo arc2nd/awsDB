@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, select
 
 # module imports
-from setup_scripts.ORM_models import Assets, Users, Catalogs, BeanLog
+from setup_scripts.ORM_models import Assets, Users, Catalogs, Roles, BeanLog
 from services import hashing, filedata, userdata, connection
 from services.log import _logger
 from config.config import config_obj
@@ -135,5 +135,5 @@ def search_string(search_string: str = '',
 if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
-    search_results = search_string(search=my_args.search_string[0], user_name=my_args.user_name[0])
+    search_results = search_string(search_string=my_args.search_string[0], user=my_args.user_name[0])
     _logger.info(search_results)
