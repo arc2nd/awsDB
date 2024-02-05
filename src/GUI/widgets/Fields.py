@@ -73,8 +73,9 @@ class FileField(QtWidgets.QWidget):
 
 
 class StringField(QtWidgets.QWidget):
-    def __init__(self, parent: QtWidgets.QLayout, label: str, enter_func=None) -> None:
+    def __init__(self, parent: QtWidgets.QLayout = None, label: str = '', enter_func=None) -> None:
         super(StringField, self).__init__()
+        self.enter_func = enter_func
 
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.setSpacing(0)
@@ -82,6 +83,7 @@ class StringField(QtWidgets.QWidget):
         self.label = QtWidgets.QLabel(label)
         self.label.setFont(BoldFont)
         self.field = QtWidgets.QLineEdit()
+        self.field.returnPressed.connect(self._return_pressed)
         self.enabled = True
 
         self.layout.addWidget(self.label)
@@ -97,6 +99,10 @@ class StringField(QtWidgets.QWidget):
     def set_enabled(self, value: bool) -> None:
         self.field.setEnabled(value)
         self.enabled = value
+
+    def _return_pressed(self) -> None:
+        if callable(self.enter_func):
+            self.enter_func()  # self.get_data())
 
 
 class ACComboField(QtWidgets.QWidget):

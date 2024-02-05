@@ -15,3 +15,6 @@ venv/
 src/creds/*creds.json
 #   encrypted
 *.crypt
+
+# test images
+*.thumb.*

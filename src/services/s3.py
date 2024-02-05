@@ -40,17 +40,18 @@ def get_s3_path(aws_folder='', filepath=''):
     return f'{aws_folder}/{filepath}'
 
 
-def to_aws(filepath=None, catalog=None, asset_name=None, version: int = 1):
-    _logger.info(catalog)
-    _logger.info(version)
-    _logger.info(asset_name)
-    _logger.info(filepath)
-    s3_resource = establish_s3_resource()
+def to_aws(filepath: str = None,
+           catalog: str = None,
+           asset_name: str = None,
+           version: int = 1,
+           s3_resource=None) -> str:
+    if not s3_resource:
+        s3_resource = establish_s3_resource()
     aws_path = get_s3_path(aws_folder=f'{catalog}/{asset_name}/{str(version).zfill(3)}', filepath=os.path.basename(filepath))
     s3_resource.meta.client.upload_file(filepath, s3_creds['BUCKET'], aws_path)
     return aws_path
 
-
+# TODO: There's got to be a better/faster way to do this.
 def from_aws(dst_path=None,
              file_name=None,
              catalog: str = None,

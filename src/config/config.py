@@ -4,6 +4,7 @@
 import os
 import sys
 import json
+import yaml
 import logging
 import pathlib
 
@@ -24,6 +25,16 @@ def get_config(path=''):
         if os.path.exists(path):
             with open(path, 'r') as fp:
                 config_dict = json.load(fp)
+    except:
+        print('couldn\'t open config file on disk, resorting to default config')
+    return config_dict
+
+def get_yml_config(path=''):
+    config_dict = None
+    try:
+        if pathlib.Path(path).exists():
+            with open(path, 'r') as fp:
+                config_dict = yaml.safe_load(fp)
     except:
         print('couldn\'t open config file on disk, resorting to default config')
     return config_dict

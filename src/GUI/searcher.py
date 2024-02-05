@@ -15,7 +15,10 @@ import qdarkstyle
 from services.log import _logger
 from widgets.Fields import *
 from widgets.asset_entry import AssetEntry
+from widgets.blank_data_panel import BlankDataPanel
+from widgets.asset_data_panel import AssetDataPanel
 from tools import search
+from tools import alternate_search as a_search
 from tools import get_catalogs as gc
 from config.config import config_obj
 import config.utils as utils
@@ -25,6 +28,11 @@ from services import s3
 VERSION = config_obj.version
 SETTINGS = {}
 
+
+# TODO: hook up buttons in asset_data_panel
+# TODO: gridlayout the results widgets
+# TODO: handle other types of searches (now it's just assets, want to search users,roles,catalogs)
+# TODO: make initial results a search for 'latest'
 
 class SearcherWindow(QtWidgets.QMainWindow):
     """
@@ -39,31 +47,46 @@ class SearcherWindow(QtWidgets.QMainWindow):
         if 'test' in self.settings:
             msg = 'In test mode'
         else:
-            msg = 'Welcome to Searcher - {}'.format(VERSION)
+            msg = f'Welcome to Searcher - {VERSION}'
         self.statusBar().showMessage(msg)
 
-        self.main_widget = SearcherWidget(parent=self)
-        self.setCentralWidget(self.main_widget)
+        self.central_widget = SearcherWidget(parent=self)
+        self.setCentralWidget(self.central_widget)
 
     def set_status_msg(self, msg: str = '') -> None:
         self.statusBar().showMessage(msg)
 
 
 class SearcherWidget(QtWidgets.QWidget):
+    """
+    the primary widget that holds all the searcher stuff
+    """
     def __init__(self, parent=None):
         super(SearcherWidget, self).__init__(parent=parent)
         self.parent = parent
         self.temp_folder = pathlib.Path(tempfile.gettempdir()).joinpath('Instrumentality').absolute()
         self.main_layout = QtWidgets.QVBoxLayout()
+        self.search_layout = QtWidgets.QVBoxLayout()
+        self.items_layout = QtWidgets.QHBoxLayout()
+        self.results_layout = QtWidgets.QHBoxLayout()
 
-        self.search_field = StringField(parent=None, label='Search:')
-        self.catalog = ACComboField(parent=self,
-                                    label='Catalog:',
-                                    options=self._get_catalogs())
+        self.search_field = StringField(parent=None, label='Search:', enter_func=self.line_search)
+        self.catalog_field = ACComboField(parent=self,
+                                          label='Catalog:',
+                                          options=self._get_catalogs())
+
+        self.stack = QtWidgets.QStackedWidget(self)
+
+        self.blank_panel = BlankDataPanel()  # 0
+        self.asset_panel = AssetDataPanel()  # 1
+
+        self.stack.setCurrentIndex(0)
+
+        self.stack.addWidget(self.blank_panel)  # 0
+        self.stack.addWidget(self.asset_panel)  # 1
 
         # results
-        self.results_layout = QtWidgets.QHBoxLayout()
-        self._load_results(asset_list=search.search_string(search_string='d',
+        self._load_results(asset_list=search.search_string(search_string='r',
                            asset=True,
                            catalog=False,
                            user=False))
@@ -83,26 +106,83 @@ class SearcherWidget(QtWidgets.QWidget):
         #                              local_thumbnail=)
         # self.results_layout.addWidget(self.test_asset)
 
+        self.menubar = QtWidgets.QMenuBar(self)
+        self.file_menu = self.menubar.addMenu('File')
 
-        self.main_layout.addWidget(self.search_field)
-        self.main_layout.addWidget(self.catalog)
-        self.main_layout.addLayout(self.results_layout)
+        self.main_layout.addWidget(self.menubar)
+
+        self.main_layout.addLayout(self.search_layout)
+        self.search_layout.addWidget(self.search_field)
+        self.search_layout.addWidget(self.catalog_field)
+        self.items_layout.addLayout(self.results_layout)
+        self.items_layout.addWidget(self.stack)
+        self.main_layout.addLayout(self.items_layout)
         self.main_layout.addStretch()
+
+        self._create_file_menu()
 
         self.setLayout(self.main_layout)
 
-    def _get_catalogs(self) -> typing.List[str]:
-        return gc.get_catalogs()
+    def line_search(self) -> None:
+        """
+        the method to run when enter is pressed in the search_field
+            resets the stack to a blank_data_panel,
+            runs the search
+            loads the results of the search into the results_layout
 
-    def _search_asset(self):
-        catalog = self.catalog.get_data()
+        Returns:
+            None
+        """
+        self.stack.setCurrentIndex(0)
+        assets = self._search_asset()
+        _logger.debug(f'Asset: {assets}')
+        self._load_results(asset_list=assets)
+
+    @staticmethod
+    def _get_catalogs() -> typing.List[str]:
+        """
+        call out to the get_catalogs tool to get a list of all catalog names
+        make sure we stick 'All' at the beginning of the list
+
+        Returns:
+            catalog_list: List[str]
+        """
+        catalog_list = ['All']
+        db_catalogs = gc.get_catalogs()
+        catalog_list.extend(db_catalogs)
+        return catalog_list
+
+    def _search_asset(self) -> typing.List[Assets]:
+        """
+        get the data form the catalog_field and the search_field and
+        run the search.
+
+        Returns:
+            List[Assets]
+        """
+        catalog = self.catalog_field.get_data()
         search_string = self.search_field.get_data()
-        return search.search_string(search_string=search_string,
+        # return search.search_string(search_string=search_string,
+        #                               asset=True,
+        #                               catalog=catalog,
+        #                               user=False)
+        return a_search.search_string(search_string=search_string,
                                     asset=True,
-                                    catalog=False,
-                                    user=False)
+                                    catalog=catalog,
+                                    user=False)['assets']
 
     def _load_results(self, asset_list: typing.List[Assets]):
+        """
+        load all the assets objects form the search into the results_layout
+        this is done by attempting to download the thumbnail from storage,
+        creating an AssetEntry object for each by using it's data
+
+        Args:
+            asset_list: List[Assets]
+
+        Returns:
+            None
+        """
         # make sure that there is a temp_folder
         if not self.temp_folder.exists():
             pathlib.Path(self.temp_folder).mkdir(mode=0o777, parents=True, exist_ok=True)
@@ -130,7 +210,37 @@ class SearcherWidget(QtWidgets.QWidget):
             new_entry = AssetEntry(parent=None,
                                    asset_object=this_asset,
                                    local_thumbnail=str(destination_path))
+            new_entry.clicked.connect(self._clicked_asset)
             self.results_layout.addWidget(new_entry)
+
+    def _clicked_asset(self, event):
+        """
+        What to do when you click on one of the AssetEntry widgets in the results_layout
+        Args:
+            event:
+
+        Returns:
+            None
+        """
+        _logger.debug(f'Clicked Asset: {event}')
+        self.stack.setCurrentIndex(1)
+        self.asset_panel.load(event)
+
+
+    def _create_file_menu(self) -> None:
+        """
+        Create the 'File' menu
+
+        Args:
+            None
+        Returns:
+            None
+        """
+        line_search_action = QtWidgets.QAction('Search', self)
+        line_search_action.setStatusTip('Search')
+        line_search_action.triggered.connect(self.line_search)
+
+        self.file_menu.addAction(line_search_action)
 
 
 if __name__ == '__main__':

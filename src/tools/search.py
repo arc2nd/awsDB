@@ -72,13 +72,13 @@ def search(asset_name: str = '', user_name: str = '', tags: typing.List[str] = '
 
 def search_string(search_string: str = '',
                   asset: bool = True,
-                  catalog: bool = False,
+                  catalog: str = False,
                   user: bool = False) -> typing.Dict:
     search_text = f'%{search_string}%'
     with Session(engine) as session:
         # figure out what we can about where this is being submitted from
         my_user_data = userdata.collect_user_data()
-        _logger.info(f'my_user_data: {my_user_data}')
+        _logger.debug(f'my_user_data: {my_user_data}')
 
         # who is searching
         # stmt = select(Users).where(Users.username == user_name)

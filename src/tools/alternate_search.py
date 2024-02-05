@@ -87,10 +87,10 @@ def search_string(search_string: str = '',
         my_user_data = userdata.collect_user_data()
         _logger.info(f'my_user_data: {my_user_data}')
 
-        # who is searching
-        stmt = select(Users).where(Users.username == user)
-        searched_by_user = session.execute(stmt).all()[0][0]
-        _logger.info(f'searched_by_user: {searched_by_user}')
+        # # who is searching
+        # stmt = select(Users).where(Users.username == user)
+        # searched_by_user = session.execute(stmt).all()[0][0]
+        # _logger.info(f'searched_by_user: {searched_by_user}')
 
         # The Search
         #     things to search for in Assets
@@ -135,5 +135,5 @@ def search_string(search_string: str = '',
 if __name__ == '__main__':
     # collect information from the CLI
     my_args = parse_args()
-    search_results = search_string(search_string=my_args.search_string[0], user=my_args.user_name[0])
+    search_results = search_string(search_string=my_args.search_string[0])  # , user=my_args.user_name[0])
     _logger.info(search_results)

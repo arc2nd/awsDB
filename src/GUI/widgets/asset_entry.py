@@ -32,13 +32,19 @@ def is_valid_url(url: str) -> typing.Union[bool, tuple]:
 
 
 class AssetEntry(QtWidgets.QWidget):
-    def __init__(self, parent: QtWidgets.QWidget, asset_object: Assets, local_thumbnail) -> None:
+    clicked = QtCore.pyqtSignal(Assets)
+
+    def __init__(self,
+                 parent: QtWidgets.QWidget,
+                 asset_object: Assets,
+                 local_thumbnail) -> None:
         super(AssetEntry, self).__init__(parent)
+        self.asset = asset_object
         self.layout = QtWidgets.QVBoxLayout()
 
         self.image = QtWidgets.QLabel()
-        if is_valid_url(asset_object.thumbnail):
-            data = urllib.urlopen(asset_object.thumbnail).read()
+        if is_valid_url(self.asset.thumbnail):
+            data = urllib.urlopen(self.asset.thumbnail).read()
             pixmap = QtGui.QPixmap()
             pixmap.loadFromData(data)
             pixmap = pixmap.scaledToWidth(240)
@@ -50,9 +56,14 @@ class AssetEntry(QtWidgets.QWidget):
                 pixmap = QtGui.QPixmap(DEFAULT_THUMBNAIL).scaledToWidgth(240)
             self.image.setPixmap(pixmap)
 
-        self.name_label = QtWidgets.QLabel(asset_object.name)
+        self.name_label = QtWidgets.QLabel(self.asset.name)
 
         self.layout.addWidget(self.image)
         self.layout.addWidget(self.name_label)
+        self.layout.addStretch()
 
         self.setLayout(self.layout)
+
+    def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
+        self.clicked.emit(self.asset)
